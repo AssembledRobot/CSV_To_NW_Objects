@@ -16,11 +16,13 @@ export default async function insertDataItem(accessToken, apiBaseUrl, dataItem) 
             timeout: 5000
         };
 
+        const nameSpace = "nsTs"
+
         const payload = {
             records: [
                 {
                     appData: {
-                        DataItem: dataItem.name,
+                        DataItem: nameSpace + dataItem.name,
                         Synonyms: [
                             {
                                 Label: dataItem.name,

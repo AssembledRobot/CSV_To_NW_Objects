@@ -35,6 +35,7 @@ export default async function processCsvFile(filePath, accessToken, apiBaseUrl) 
 
   const tableName = path.parse(filePath).name;
   const fields = [];
+  const nameSpace = "nsTs";
 
   console.log(`Processing CSV file: ${filePath}`);
 
@@ -49,7 +50,7 @@ export default async function processCsvFile(filePath, accessToken, apiBaseUrl) 
       type: dataType
     });
 
-    fields.push({ Field: headerName });
+    fields.push({ Field: nameSpace + headerName});
   }
 
   const table = { name: tableName, fields };

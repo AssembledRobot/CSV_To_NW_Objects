@@ -16,11 +16,13 @@ export default async function insertTable(accessToken, apiBaseUrl, table) {
             timeout: 5000
         };
 
+        const nameSpace = "nsTs"
+
         const payload = {
             "records": [
                 {
                     "appData": {
-                        "TableSchema": table.name,
+                        "TableSchema": nameSpace + table.name,
                         "TableSchemaType": "Main",
                         "SchemaCategory": "Tenant",
                         "Description": table.name,
