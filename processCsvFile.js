@@ -40,23 +40,25 @@ export default async function processCsvFile(
     const headerName = headersRow[i];
     const dataType = typesRow[i];
 
-    console.log(`Inserting DataItem: ${headerName} (${dataType})`);
-
     const dataItem = {
       name: headerName,
       type: dataType,
     };
     await createNWCall(accessToken, apiBaseUrl, "DataItems", dataItem);
 
+    // store fields so that they can be passed to the table and app creation
     fields.push({ Field: nameSpace + headerName });
   }
-
-  console.log(`Inserting table: ${tableName}`);
   
   const table = {
     name: tableName,
     fields,
   };
   await createNWCall(accessToken, apiBaseUrl, "TableSchemas", table);
-  console.log(`Table ${tableName} inserted successfully.`);
+
+  const app = {
+    name: tableName,
+    tableSchema: nameSpace + tableName,
+  };
+  await createNWCall(accessToken, apiBaseUrl, "Applications", app);
 }
