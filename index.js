@@ -13,7 +13,7 @@ async function main() {
   const inputFolder = "./inputs";
   const files = fs.readdirSync(inputFolder);
 
-  const csvFiles = files.filter(file => file.endsWith(".csv"));
+  const csvFiles = files.filter((file) => file.endsWith(".csv"));
 
   for (const file of csvFiles) {
     const filePath = path.join(inputFolder, file);
@@ -27,4 +27,4 @@ async function main() {
   console.log("All CSV files processed successfully.");
 }
 
-main().catch(err => console.error("Fatal error:", err));
+main().catch((err) => console.error("Fatal error:", err));

@@ -22,13 +22,11 @@ async function readCsvHeaders(filePath) {
   });
 }
 
-/**
- * Process a CSV file:
- * 1. Insert data items
- * 2. Build table object
- * 3. Call insertTable
- */
-export default async function processCsvFile(filePath, accessToken, apiBaseUrl) {
+export default async function processCsvFile(
+  filePath,
+  accessToken,
+  apiBaseUrl,
+) {
   const rows = await readCsvHeaders(filePath);
   const headersRow = Object.values(rows[0]);
   const typesRow = Object.values(rows[1]);
@@ -45,15 +43,19 @@ export default async function processCsvFile(filePath, accessToken, apiBaseUrl) 
 
     console.log(`Inserting DataItem: ${headerName} (${dataType})`);
 
-    await insertDataItem(accessToken, apiBaseUrl, {
+    const dataItem = {
       name: headerName,
-      type: dataType
-    });
+      type: dataType,
+    };
+    await insertDataItem(accessToken, apiBaseUrl, dataItem);
 
-    fields.push({ Field: nameSpace + headerName});
+    fields.push({ Field: nameSpace + headerName });
   }
 
-  const table = { name: tableName, fields };
+  const table = {
+    name: tableName,
+    fields,
+  };
   console.log(`Inserting table: ${tableName}`);
   await insertTable(accessToken, apiBaseUrl, table);
   console.log(`Table ${tableName} inserted successfully.`);

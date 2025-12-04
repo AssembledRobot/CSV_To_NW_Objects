@@ -2,7 +2,6 @@ import dotenv from "dotenv";
 dotenv.config();
 import axios from "axios";
 
-
 async function authenticate() {
   const url = process.env.NW_AUTH_URL;
 
@@ -18,10 +17,10 @@ async function authenticate() {
       {},
       {
         headers: {
-          "NwIsIntegrator": "true",
-          "Authorization": `Basic ${basicAuth}`
-        }
-      }
+          NwIsIntegrator: "true",
+          Authorization: `Basic ${basicAuth}`,
+        },
+      },
     );
 
     const data = response.data;
@@ -38,9 +37,8 @@ async function authenticate() {
 
     return {
       accessToken: data.access_token,
-      apiBaseUrl: data.ApiBaseURL
+      apiBaseUrl: data.ApiBaseURL,
     };
-
   } catch (error) {
     console.error("Authentication failed:", error.message);
     if (error.response) {
