@@ -1,8 +1,7 @@
 import fs from "fs";
 import path from "path";
 import csv from "csv-parser";
-import insertDataItem from "./insertDataItem.js";
-import insertTable from "./insertTable.js";
+import createNWCall from "./createNWCall.js";
 
 /**
  * Reads the first two rows of a CSV: headers + types
@@ -47,16 +46,17 @@ export default async function processCsvFile(
       name: headerName,
       type: dataType,
     };
-    await insertDataItem(accessToken, apiBaseUrl, dataItem);
+    await createNWCall(accessToken, apiBaseUrl, "DataItems", dataItem);
 
     fields.push({ Field: nameSpace + headerName });
   }
 
+  console.log(`Inserting table: ${tableName}`);
+  
   const table = {
     name: tableName,
     fields,
   };
-  console.log(`Inserting table: ${tableName}`);
-  await insertTable(accessToken, apiBaseUrl, table);
+  await createNWCall(accessToken, apiBaseUrl, "TableSchemas", table);
   console.log(`Table ${tableName} inserted successfully.`);
 }
