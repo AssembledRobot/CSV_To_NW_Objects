@@ -35,12 +35,10 @@ async function authenticate() {
     // }
 
     console.log("Authentication successful.");
-    console.log("Release:", data.Release);
 
     return {
       accessToken: data.access_token,
-      apiBaseUrl: data.ApiBaseURL,
-      refreshToken: data.refresh_token
+      apiBaseUrl: data.ApiBaseURL
     };
 
   } catch (error) {
