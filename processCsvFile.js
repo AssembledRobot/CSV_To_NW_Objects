@@ -56,9 +56,19 @@ export default async function processCsvFile(
   };
   await createNWCall(accessToken, apiBaseUrl, "TableSchemas", table);
 
+  //add the display options to each field
+  const appFields = [];
+  for (const f of fields) {
+    appFields.push({
+      Field: f.Field,
+      ListViewDisplayOption: "Primary",
+    });
+  }
+
   const app = {
     name: tableName,
     tableSchema: nameSpace + tableName,
+    appFields,
   };
   await createNWCall(accessToken, apiBaseUrl, "Applications", app);
 }

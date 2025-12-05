@@ -55,18 +55,18 @@ function createAppPayload(app) {
       {
         appData: {
           ApplicationName: nameSpace + app.name,
-          ApplicationType: "Standard",
+          ApplicationType: "List Only",
           ApplicationStyle: "Standard",
           Description: app.name,
           ProductModule: "Implementation Support",
           SystemGroup: "Integrations",
           TableSchema: nameSpace + app.name,
-
           Pages: [
             {
               Page: "nsTsA",
             },
           ],
+          ListFieldSelection: app.fields
         },
       },
     ],
