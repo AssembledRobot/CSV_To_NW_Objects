@@ -1,80 +1,10 @@
 import axios from "axios";
-const nameSpace = "nsTs";
-
-function createDataitemPayload(dataItem) {
-  return {
-    records: [
-      {
-        appData: {
-          DataItem: nameSpace + dataItem.name,
-          Synonyms: [
-            {
-              Label: dataItem.name,
-              HelpText: dataItem.name,
-              ShortLabel: dataItem.name,
-            },
-          ],
-          LookupType: "Single",
-          SystemGroup: "Integrations",
-          DataItemType: dataItem.type,
-          ProductModule: "Implementation Support",
-          DetailedDescription: dataItem.name,
-          DataPrecision: 2,
-        },
-      },
-    ],
-    createContainer: true,
-    commitContainer: true,
-  };
-}
-
-function createTablePayload(table) {
-  return {
-    records: [
-      {
-        appData: {
-          TableSchema: nameSpace + table.name,
-          TableSchemaType: "Main",
-          SchemaCategory: "Tenant",
-          Description: table.name,
-          SystemGroup: "Integrations",
-          ProductModule: "Integration",
-          Fields: table.fields,
-        },
-      },
-    ],
-    createContainer: true,
-    commitContainer: true,
-    ignoreActionBlocksOnCommit: false,
-  };
-}
-
-function createAppPayload(app) {
-  return {
-    records: [
-      {
-        appData: {
-          ApplicationName: nameSpace + app.name,
-          ApplicationType: "List Only",
-          ApplicationStyle: "Standard",
-          Description: app.name,
-          ProductModule: "Implementation Support",
-          SystemGroup: "Integrations",
-          TableSchema: nameSpace + app.name,
-          Pages: [
-            {
-              Page: "nsTsA",
-            },
-          ],
-          ListFieldSelection: app.appFields
-        },
-      },
-    ],
-    createContainer: true,
-    commitContainer: true,
-    ignoreActionBlocksOnCommit: false,
-  };
-}
+import {
+  createDataitemPayload,
+  createTablePayload,
+  createAppPayload,
+  createSecurityGroupPayload,
+} from "./createPayloads.js";
 
 export default async function createNWCall(
   accessToken,
@@ -102,6 +32,9 @@ export default async function createNWCall(
       case "DataItems":
         payload = createDataitemPayload(metaData);
         break;
+      case "SecurityGroups":
+        payload = createSecurityGroupPayload(metaData);
+        break;
       case "TableSchemas":
         payload = createTablePayload(metaData);
         break;
@@ -111,14 +44,9 @@ export default async function createNWCall(
       default:
         throw new Error(`Unsupported type: ${type}`);
     }
-
-    console.log(payload);
-    console.log(payload.records[0].appData);
-
+ 
     // Make the request and wait for it to finish
     const response = await axios.post(url, payload, config);
-
-    console.log(response.data);
 
     console.log(`✅ ${type} created successfully → ${metaData.name}`);
     return response.data;

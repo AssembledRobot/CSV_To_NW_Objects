@@ -3,9 +3,11 @@ import path from "path";
 import csv from "csv-parser";
 import createNWCall from "./createNWCall.js";
 
-const createDataItem = false
-const createTable = false
-const createApp = true
+const createDataItem = true;
+const createSecurityGroup = true;
+const createTable = true;
+const createApp = true;
+const createPermission = true;
 
 /**
  * Reads the first two rows of a CSV: headers + types
@@ -28,7 +30,7 @@ async function readCsvHeaders(filePath) {
 export default async function processCsvFile(
   filePath,
   accessToken,
-  apiBaseUrl,
+  apiBaseUrl
 ) {
   const rows = await readCsvHeaders(filePath);
   const headersRow = Object.values(rows[0]);
@@ -50,44 +52,65 @@ export default async function processCsvFile(
     };
 
     if (createDataItem) {
-    await createNWCall(accessToken, apiBaseUrl, "DataItems", dataItem);
+      await createNWCall(accessToken, apiBaseUrl, "DataItems", dataItem);
     }
 
     // store fields so that they can be passed to the table and app creation
     fields.push({ Field: nameSpace + headerName });
   }
-  
+
+  if (createSecurityGroup) {
+    const securityGroup = {
+      name: tableName,
+    };
+    await createNWCall(
+      accessToken,
+      apiBaseUrl,
+      "SecurityGroups",
+      securityGroup
+    );
+  }
+
+  // this has to happen regardless so that the create app call can reference the table
   const table = {
     name: tableName,
     fields,
   };
 
   if (createTable) {
-  await createNWCall(accessToken, apiBaseUrl, "TableSchemas", table);
+    await createNWCall(accessToken, apiBaseUrl, "TableSchemas", table);
   }
-
-  //add the display options to each field
-  let appFields = [];
-  let sequence = 1;
-  for (const f of fields) {
-    appFields.push({
-      TableSchema: nameSpace + tableName,
-      Field: f.Field,
-      FieldType: "DataItem",
-      nw_seq: sequence,
-      FieldStatusDetail: "Ok",
-      ListViewDisplayOption: "Primary",
-    });
-    sequence++;
-  }
-
-  const app = {
-    name: tableName,
-    tableSchema: nameSpace + tableName,
-    appFields,
-  };
 
   if (createApp) {
-  await createNWCall(accessToken, apiBaseUrl, "Applications", app);
+    //add the display options to each field
+    let appFields = [];
+    let sequence = 1;
+    for (const f of fields) {
+      appFields.push({
+        TableSchema: nameSpace + tableName,
+        Field: f.Field,
+        FieldType: "DataItem",
+        nw_seq: sequence,
+        FieldStatusDetail: "Ok",
+        ListViewDisplayOption: "Primary",
+      });
+      sequence++;
+    }
+
+    const app = {
+      name: tableName,
+      tableSchema: nameSpace + tableName,
+      appFields,
+    };
+    await createNWCall(accessToken, apiBaseUrl, "Applications", app);
+  }
+
+  if (createPermission) {
+    const permission = {
+      name: tableName,
+      securityGroup: tableName,
+    };
+    // can I make all the permisssion in one call?
+    await createNWCall(accessToken, apiBaseUrl, "Permissions", permission);
   }
 }
