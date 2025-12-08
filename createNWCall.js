@@ -66,7 +66,7 @@ function createAppPayload(app) {
               Page: "nsTsA",
             },
           ],
-          ListFieldSelection: app.fields
+          ListFieldSelection: app.appFields
         },
       },
     ],
@@ -112,8 +112,13 @@ export default async function createNWCall(
         throw new Error(`Unsupported type: ${type}`);
     }
 
+    console.log(payload);
+    console.log(payload.records[0].appData);
+
     // Make the request and wait for it to finish
     const response = await axios.post(url, payload, config);
+
+    console.log(response.data);
 
     console.log(`✅ ${type} created successfully → ${metaData.name}`);
     return response.data;
