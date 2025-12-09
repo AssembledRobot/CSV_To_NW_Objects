@@ -2,13 +2,13 @@ import fs from "fs";
 import path from "path";
 import csv from "csv-parser";
 import createNWCall from "./createNWCall.js";
-import { type } from "os";
 
-const createDataItem = false;
-const createSecurityGroup = false;
-const createTable = false;
+const createDataItem = true;
+const createSecurityGroup = true;
+const createTable = true;
 const createApp = true;
 const createPermission = true;
+const createRole = true;
 
 /**
  * Reads the first two rows of a CSV: headers + types
@@ -39,6 +39,7 @@ export default async function processCsvFile(
 
   const tableName = path.parse(filePath).name;
   const fields = [];
+  const createdPermission = [];
 
   console.log(`Processing CSV file: ${filePath}`);
 
@@ -92,6 +93,27 @@ export default async function processCsvFile(
       type: "Permissions",
       permissionType: ["App", "Table", "LogicBlock"],
     };
-    await createNWCall(accessToken, apiBaseUrl, permission);
+
+    const permissionCall = await createNWCall(
+      accessToken,
+      apiBaseUrl,
+      permission
+    );
+
+    if (permissionCall) {
+      for (const record of permissionCall.Data.records) {
+        createdPermission.push(record.appData.Permission);
+      }
+    }
+  }
+
+  if (createRole) {
+    let role = {
+      name: tableName,
+      type: "Roles",
+      roleType: ["Duty", "Functional"],
+      createdPermission: createdPermission, // if there were permissions created, add them to the duty role
+    };
+    await createNWCall(accessToken, apiBaseUrl, role);
   }
 }

@@ -1,6 +1,3 @@
-import dotenv from "dotenv";
-dotenv.config();
-
 import fs from "fs";
 import path from "path";
 
@@ -9,16 +6,19 @@ import processCsvFile from "./processCsvFile.js";
 
 const auth = await authenticate();
 
-async function main() {
+export default function getFiles() {
   const inputFolder = "./inputs";
   const files = fs.readdirSync(inputFolder);
 
   const csvFiles = files.filter((file) => file.endsWith(".csv"));
+  return csvFiles.map((file) => path.join(inputFolder, file));
+}
 
-  for (const file of csvFiles) {
-    const filePath = path.join(inputFolder, file);
+async function main() {
+  const files = getFiles();
+  for (const file of files) {
     try {
-      await processCsvFile(filePath, auth.accessToken, auth.apiBaseUrl);
+      await processCsvFile(file, auth.accessToken, auth.apiBaseUrl);
     } catch (err) {
       console.error(`Error processing file ${file}:`, err);
     }

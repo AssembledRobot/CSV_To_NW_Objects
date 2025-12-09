@@ -1,2 +1,2 @@
-RTText,RTNumber,RTBoolean,RTCurrency
-Text,Number,TrueFalse,Currency
+RTText,RTNumber,RTBoolean,RTCurrency,RTDate,RTTime,RTDateTime
+Text,Number,TrueFalse,Currency,Date,Time,DateTime

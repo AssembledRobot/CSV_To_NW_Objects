@@ -34,6 +34,8 @@ export function createPayload(data) {
       return createAppPayload(data);
     case "Permissions":
       return createPermissionPayload(data);
+    case "Roles":
+      return createRolePayload(data);
     default:
       throw new Error(`Unsupported type: ${type}`);
   }
@@ -175,6 +177,46 @@ function createPermissionPayload(permission) {
         break;
       default:
         throw new Error(`Unsupported permission type: ${type}`);
+    }
+  }
+  return buildMultiRecordPayload(records);
+}
+
+function createRolePayload(role) {
+  let records = [];
+  let permissionsList = [];
+
+  if (
+    role.createdPermission !== undefined &&
+    role.createdPermission.length > 0
+  ) {
+    for (const perm of role.createdPermission) {
+      permissionsList.push({ Permission: perm });
+    }
+  }
+
+  for (const type of role.roleType) {
+    if (type === "Duty") {
+      records.push({
+        appData: {
+          Role: nameSpace + role.name + "Admin",
+          Description: role.name + "Admin",
+          ProductModule: "Implementation Support",
+          SystemGroup: "Integrations",
+          RoleType: "DutyRole",
+          PermissionsList: permissionsList,
+        },
+      });
+    } else if (type === "Functional") {
+      records.push({
+        appData: {
+          Role: nameSpace + " - " + role.name + " Admin",
+          Description: role.name + "Admin",
+          ProductModule: "Implementation Support",
+          SystemGroup: "Integrations",
+          RoleType: "FunctionalRole",
+        },
+      });
     }
   }
   return buildMultiRecordPayload(records);
