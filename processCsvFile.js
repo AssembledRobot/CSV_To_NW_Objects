@@ -1,7 +1,6 @@
-import fs from "fs";
 import path from "path";
-import csv from "csv-parser";
 import createNWCall from "./createNWCall.js";
+import readCsvHeaders from "./readCsvHeaders.js";
 
 const createDataItem = true;
 const createSecurityGroup = true;
@@ -9,24 +8,6 @@ const createTable = true;
 const createApp = true;
 const createPermission = true;
 const createRole = true;
-
-/**
- * Reads the first two rows of a CSV: headers + types
- */
-async function readCsvHeaders(filePath) {
-  return new Promise((resolve, reject) => {
-    const rows = [];
-    fs.createReadStream(filePath)
-      .pipe(csv({ headers: false })) // read raw rows
-      .on("data", (row) => {
-        rows.push(row);
-        if (rows.length === 2) {
-          resolve(rows); // only need first two rows
-        }
-      })
-      .on("error", reject);
-  });
-}
 
 export default async function processCsvFile(
   filePath,
