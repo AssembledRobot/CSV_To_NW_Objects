@@ -13,6 +13,15 @@ function buildPayload(appData) {
   return payload;
 }
 
+function buildMultiRecordPayload(recordsArray) {
+  const payload = {
+    records: recordsArray,
+    createContainer: true,
+    commitContainer: true,
+  };
+  return payload;
+}
+
 export function createDataitemPayload(dataItem) {
   const appData = {
     DataItem: nameSpace + dataItem.name,
@@ -80,19 +89,59 @@ export function createAppPayload(app) {
   return buildPayload(appData);
 }
 
-//call to write all the permissions in one call, need to change to allow for muliple records at one time
 export function createPermissionPayload(permission) {
-  const appData = {
-    Permission: nameSpace + permission.name + " - App", //TODO: how to handle different permission types
-    Description: permission.name,
-    ProductModule: "Implementation Support",
-    SystemGroup: "Integrations",
-    AppSettingSecurity: [
-      {
-        SecurityGroup: nameSpace + permission.securityGroup,
-      },
-    ],
-  };
+  let records = [];
+  for (const perm of permission) {
+    switch (perm.type) {
+      case "App":
+        records.push({
+          Permission: nameSpace + perm.name + " - Apps",
+          Description: perm.name,
+          ProductModule: "Implementation Support",
+          SystemGroup: "Integrations",
+          ApplicationSecurityForm: [
+            {
+              SecurityGroup: nameSpace + perm.name
+            }
+          ]
+        });
+        break;
+      case "Table":
+        records.push({
+          Permission: nameSpace + perm.name + " - RUID All",
+          Description: perm.name,
+          ProductModule: "Implementation Support",
+          SystemGroup: "Integrations",
+          AccessRules: [
+            {
+              SecurityGroup: nameSpace + perm.name,
+              AllowRead: true,
+              AllowDelete: true,
+              AllowInsert: true,
+              AllowUpdate: true
+            }
+          ]
+        });
+        break;
+      case "LogicBlock":
+        records.push({
+          Permission: nameSpace + perm.name + " - Logic Blocks",
+          Description: perm.name,
+          ProductModule: "Implementation Support",
+          SystemGroup: "Integrations",
+          ActionSecurityLogicBlocks: [
+            {
+              SecurityGroup: nameSpace + perm.name,
+              AllowFullUpdate: true,
+              SkipRowSecurity: true
+            }
+          ]
+        });
+        break;
+      default:
+        throw new Error(`Unsupported permission type: ${perm.type}`);
+    }
+  }
 
-  return buildPayload(appData);
+  return buildMultiRecordPayload(records);
 }

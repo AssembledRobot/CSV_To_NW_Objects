@@ -4,6 +4,7 @@ import {
   createTablePayload,
   createAppPayload,
   createSecurityGroupPayload,
+  createPermissionPayload,
 } from "./createPayloads.js";
 
 export default async function createNWCall(
@@ -40,6 +41,9 @@ export default async function createNWCall(
         break;
       case "Applications":
         payload = createAppPayload(metaData);
+        break;
+      case "Permissions":
+        payload = createPermissionPayload(metaData);
         break;
       default:
         throw new Error(`Unsupported type: ${type}`);

@@ -106,11 +106,27 @@ export default async function processCsvFile(
   }
 
   if (createPermission) {
-    const permission = {
-      name: tableName,
-      securityGroup: tableName,
-    };
-    // can I make all the permisssion in one call?
+    const permission = [];
+
+    // Add app permissions for App, Table, and LogicBlock
+    permission.push(
+      {
+        name: tableName,
+        securityGroup: tableName,
+        type: "App",
+      },
+      {
+        name: tableName,
+        securityGroup: tableName,
+        type: "Table",
+      },
+      {
+        name: tableName,
+        securityGroup: tableName,
+        type: "LogicBlock",
+      }
+    );
+
     await createNWCall(accessToken, apiBaseUrl, "Permissions", permission);
   }
 }
