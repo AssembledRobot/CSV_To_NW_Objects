@@ -22,7 +22,24 @@ function buildMultiRecordPayload(recordsArray) {
   return payload;
 }
 
-export function createDataitemPayload(dataItem) {
+export function createPayload(data) {
+  switch (data.type) {
+    case "DataItems":
+      return createDataitemPayload(data);
+    case "SecurityGroups":
+      return createSecurityGroupPayload(data);
+    case "TableSchemas":
+      return createTablePayload(data);
+    case "Applications":
+      return createAppPayload(data);
+    case "Permissions":
+      return createPermissionPayload(data);
+    default:
+      throw new Error(`Unsupported type: ${type}`);
+  }
+}
+
+function createDataitemPayload(dataItem) {
   const appData = {
     DataItem: nameSpace + dataItem.name,
     Synonyms: [
@@ -34,7 +51,7 @@ export function createDataitemPayload(dataItem) {
     ],
     LookupType: "Single",
     SystemGroup: "Integrations",
-    DataItemType: dataItem.type,
+    DataItemType: dataItem.dataItemType,
     ProductModule: "Implementation Support",
     DetailedDescription: dataItem.name,
     DataPrecision: 2,
@@ -43,7 +60,7 @@ export function createDataitemPayload(dataItem) {
   return buildPayload(appData);
 }
 
-export function createSecurityGroupPayload(securityGroup) {
+function createSecurityGroupPayload(securityGroup) {
   const appData = {
     SecurityGroup: nameSpace + securityGroup.name,
     ProductModule: "Implementation Support",
@@ -53,7 +70,12 @@ export function createSecurityGroupPayload(securityGroup) {
   return buildPayload(appData);
 }
 
-export function createTablePayload(table) {
+function createTablePayload(table) {
+  // prepare fields with namespace
+  const tableFields = table.fields.map((field) => ({
+    Field: nameSpace + field.Field,
+  }));
+
   const appData = {
     TableSchema: nameSpace + table.name,
     TableSchemaType: "Main",
@@ -62,13 +84,20 @@ export function createTablePayload(table) {
     SystemGroup: "Integrations",
     ProductModule: "Integration",
     TableSecurityGroup: nameSpace + table.name,
-    Fields: table.fields,
+    Fields: tableFields,
   };
 
   return buildPayload(appData);
 }
 
-export function createAppPayload(app) {
+function createAppPayload(app) {
+  // prepare fields with namespace
+  const appFields = app.fields.map((field) => ({
+    Field: nameSpace + field.Field,
+    ListViewDisplayOption: "Primary",
+    TableSchema: nameSpace + app.name,
+  }));
+
   const appData = {
     ApplicationName: nameSpace + app.name,
     ApplicationType: "List Only",
@@ -83,65 +112,70 @@ export function createAppPayload(app) {
         Page: "nsTsA",
       },
     ],
-    ListFieldSelection: app.appFields,
+    ListFieldSelection: appFields,
   };
 
   return buildPayload(appData);
 }
 
-export function createPermissionPayload(permission) {
+function createPermissionPayload(permission) {
   let records = [];
-  for (const perm of permission) {
-    switch (perm.type) {
+  for (const type of permission.permissionType) {
+    switch (type) {
       case "App":
         records.push({
-          Permission: nameSpace + perm.name + " - Apps",
-          Description: perm.name,
-          ProductModule: "Implementation Support",
-          SystemGroup: "Integrations",
-          ApplicationSecurityForm: [
-            {
-              SecurityGroup: nameSpace + perm.name
-            }
-          ]
+          appData: {
+            Permission: nameSpace + permission.name + " - Apps",
+            Description: permission.name,
+            ProductModule: "Implementation Support",
+            SystemGroup: "Integrations",
+            ApplicationSecurityForm: [
+              {
+                SecurityGroup: nameSpace + permission.name,
+              },
+            ],
+          },
         });
         break;
       case "Table":
         records.push({
-          Permission: nameSpace + perm.name + " - RUID All",
-          Description: perm.name,
-          ProductModule: "Implementation Support",
-          SystemGroup: "Integrations",
-          AccessRules: [
-            {
-              SecurityGroup: nameSpace + perm.name,
-              AllowRead: true,
-              AllowDelete: true,
-              AllowInsert: true,
-              AllowUpdate: true
-            }
-          ]
+          appData: {
+            Permission: nameSpace + permission.name + " - RUID All",
+            Description: permission.name,
+            ProductModule: "Implementation Support",
+            SystemGroup: "Integrations",
+            AccessRules: [
+              {
+                SecurityGroup: nameSpace + permission.name,
+                AllowRead: true,
+                AllowDelete: true,
+                AllowInsert: true,
+                AllowUpdate: true,
+              },
+            ],
+          },
         });
         break;
       case "LogicBlock":
         records.push({
-          Permission: nameSpace + perm.name + " - Logic Blocks",
-          Description: perm.name,
-          ProductModule: "Implementation Support",
-          SystemGroup: "Integrations",
-          ActionSecurityLogicBlocks: [
-            {
-              SecurityGroup: nameSpace + perm.name,
-              AllowFullUpdate: true,
-              SkipRowSecurity: true
-            }
-          ]
+          appData: {
+            Permission: nameSpace + permission.name + " - Logic Blocks",
+            Description: permission.name,
+            ProductModule: "Implementation Support",
+            SystemGroup: "Integrations",
+            ActionSecurityLogicBlocks: [
+              {
+                SecurityGroup: nameSpace + permission.name,
+                AllowFullUpdate: true,
+                SkipRowSecurity: true,
+              },
+            ],
+          },
         });
         break;
       default:
-        throw new Error(`Unsupported permission type: ${perm.type}`);
+        throw new Error(`Unsupported permission type: ${type}`);
     }
   }
-
   return buildMultiRecordPayload(records);
 }

@@ -2,10 +2,11 @@ import fs from "fs";
 import path from "path";
 import csv from "csv-parser";
 import createNWCall from "./createNWCall.js";
+import { type } from "os";
 
-const createDataItem = true;
-const createSecurityGroup = true;
-const createTable = true;
+const createDataItem = false;
+const createSecurityGroup = false;
+const createTable = false;
 const createApp = true;
 const createPermission = true;
 
@@ -38,95 +39,59 @@ export default async function processCsvFile(
 
   const tableName = path.parse(filePath).name;
   const fields = [];
-  const nameSpace = "nsTs";
 
   console.log(`Processing CSV file: ${filePath}`);
 
+  // Seperate calls for each data item because it allows partial success
   for (let i = 0; i < headersRow.length; i++) {
     const headerName = headersRow[i];
     const dataType = typesRow[i];
 
-    const dataItem = {
-      name: headerName,
-      type: dataType,
-    };
-
     if (createDataItem) {
-      await createNWCall(accessToken, apiBaseUrl, "DataItems", dataItem);
+      const dataItem = {
+        name: headerName,
+        type: "DataItems",
+        dataItemType: dataType,
+      };
+      await createNWCall(accessToken, apiBaseUrl, dataItem);
     }
 
     // store fields so that they can be passed to the table and app creation
-    fields.push({ Field: nameSpace + headerName });
+    fields.push({ Field: headerName });
   }
 
   if (createSecurityGroup) {
     const securityGroup = {
       name: tableName,
+      type: "SecurityGroups",
     };
-    await createNWCall(
-      accessToken,
-      apiBaseUrl,
-      "SecurityGroups",
-      securityGroup
-    );
+    await createNWCall(accessToken, apiBaseUrl, securityGroup);
   }
 
-  // this has to happen regardless so that the create app call can reference the table
-  const table = {
-    name: tableName,
-    fields,
-  };
-
   if (createTable) {
-    await createNWCall(accessToken, apiBaseUrl, "TableSchemas", table);
+    const table = {
+      name: tableName,
+      type: "TableSchemas",
+      fields: fields,
+    };
+    await createNWCall(accessToken, apiBaseUrl, table);
   }
 
   if (createApp) {
-    //add the display options to each field
-    let appFields = [];
-    let sequence = 1;
-    for (const f of fields) {
-      appFields.push({
-        TableSchema: nameSpace + tableName,
-        Field: f.Field,
-        FieldType: "DataItem",
-        nw_seq: sequence,
-        FieldStatusDetail: "Ok",
-        ListViewDisplayOption: "Primary",
-      });
-      sequence++;
-    }
-
     const app = {
       name: tableName,
-      tableSchema: nameSpace + tableName,
-      appFields,
+      type: "Applications",
+      fields: fields,
     };
-    await createNWCall(accessToken, apiBaseUrl, "Applications", app);
+    await createNWCall(accessToken, apiBaseUrl, app);
   }
 
   if (createPermission) {
-    const permission = [];
-
-    // Add app permissions for App, Table, and LogicBlock
-    permission.push(
-      {
-        name: tableName,
-        securityGroup: tableName,
-        type: "App",
-      },
-      {
-        name: tableName,
-        securityGroup: tableName,
-        type: "Table",
-      },
-      {
-        name: tableName,
-        securityGroup: tableName,
-        type: "LogicBlock",
-      }
-    );
-
-    await createNWCall(accessToken, apiBaseUrl, "Permissions", permission);
+    let permission = {
+      name: tableName,
+      type: "Permissions",
+      permissionType: ["App", "Table", "LogicBlock"],
+    };
+    await createNWCall(accessToken, apiBaseUrl, permission);
   }
 }

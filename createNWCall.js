@@ -1,22 +1,10 @@
 import axios from "axios";
-import {
-  createDataitemPayload,
-  createTablePayload,
-  createAppPayload,
-  createSecurityGroupPayload,
-  createPermissionPayload,
-} from "./createPayloads.js";
+import { createPayload } from "./createPayloads.js";
 
-export default async function createNWCall(
-  accessToken,
-  apiBaseUrl,
-  type,
-  metaData
-) {
-  const url = `${apiBaseUrl}/v2/data/${type}`;
-
+export default async function createNWCall(accessToken, apiBaseUrl, data) {
   try {
-    console.log(`📡 Sending ${type} request → ${url} → ${metaData.name}`);
+    const url = `${apiBaseUrl}/v2/data/${data.type}`;
+    console.log(`📡 Sending ${data.type} request → ${url} → ${data.name}`);
 
     const headers = {
       "Content-Type": "application/json",
@@ -28,34 +16,15 @@ export default async function createNWCall(
       timeout: 5000,
     };
 
-    let payload = {};
-    switch (type) {
-      case "DataItems":
-        payload = createDataitemPayload(metaData);
-        break;
-      case "SecurityGroups":
-        payload = createSecurityGroupPayload(metaData);
-        break;
-      case "TableSchemas":
-        payload = createTablePayload(metaData);
-        break;
-      case "Applications":
-        payload = createAppPayload(metaData);
-        break;
-      case "Permissions":
-        payload = createPermissionPayload(metaData);
-        break;
-      default:
-        throw new Error(`Unsupported type: ${type}`);
-    }
+    const payload = createPayload(data);
  
     // Make the request and wait for it to finish
     const response = await axios.post(url, payload, config);
 
-    console.log(`✅ ${type} created successfully → ${metaData.name}`);
+    console.log(`✅ ${data.type} created successfully → ${data.name}`);
     return response.data;
   } catch (error) {
-    console.error(`❌ ${type} creation failed → ${metaData.name}`);
+    console.error(`❌ ${data.type} creation failed → ${data.name}`);
     if (error.response) {
       console.error(error.response.data); // optional: log server error
     } else {
