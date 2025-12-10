@@ -16,7 +16,7 @@ export default async function createNWCall(accessToken, apiBaseUrl, data) {
       timeout: 5000,
     };
 
-    const payload = createPayload(data);
+    payload = createPayload(data);
 
     // Make the request and wait for it to finish
     const response = await axios.post(url, payload, config);

@@ -1,5 +1,5 @@
-import authenticate from "./auth.js";
-import getFiles from "./getFiles.js";
+import authenticate from "../auth.js";
+import getFiles from "../getFiles.js";
 import purgeCsvFile from "./purgeCsvFile.js";
 
 const auth = await authenticate();

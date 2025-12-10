@@ -44,6 +44,7 @@ export function createPayload(data) {
 function createDataitemPayload(dataItem) {
   const appData = {
     DataItem: nameSpace + dataItem.name,
+    nwExternalId: dataItem.nwExternalId,
     Synonyms: [
       {
         Label: dataItem.name,
@@ -65,6 +66,7 @@ function createDataitemPayload(dataItem) {
 function createSecurityGroupPayload(securityGroup) {
   const appData = {
     SecurityGroup: nameSpace + securityGroup.name,
+    nwExternalId: securityGroup.nwExternalId,
     ProductModule: "Implementation Support",
     SystemGroup: "Integrations",
   };
@@ -80,6 +82,7 @@ function createTablePayload(table) {
 
   const appData = {
     TableSchema: nameSpace + table.name,
+    nwExternalId: table.nwExternalId,
     TableSchemaType: "Main",
     SchemaCategory: "Tenant",
     Description: table.name,
@@ -102,6 +105,7 @@ function createAppPayload(app) {
 
   const appData = {
     ApplicationName: nameSpace + app.name,
+    nwExternalId: app.nwExternalId,
     ApplicationType: "List Only",
     ApplicationStyle: "Standard",
     Description: app.name,
@@ -128,6 +132,7 @@ function createPermissionPayload(permission) {
         records.push({
           appData: {
             Permission: nameSpace + permission.name + " - Apps",
+            nwExternalId: permission.nwExternalId,
             Description: permission.name,
             ProductModule: "Implementation Support",
             SystemGroup: "Integrations",
@@ -143,6 +148,7 @@ function createPermissionPayload(permission) {
         records.push({
           appData: {
             Permission: nameSpace + permission.name + " - RUID All",
+            nwExternalId: permission.nwExternalId,
             Description: permission.name,
             ProductModule: "Implementation Support",
             SystemGroup: "Integrations",
@@ -162,6 +168,7 @@ function createPermissionPayload(permission) {
         records.push({
           appData: {
             Permission: nameSpace + permission.name + " - Logic Blocks",
+            nwExternalId: permission.nwExternalId,
             Description: permission.name,
             ProductModule: "Implementation Support",
             SystemGroup: "Integrations",
@@ -200,6 +207,7 @@ function createRolePayload(role) {
       records.push({
         appData: {
           Role: nameSpace + role.name + "Admin",
+          nwExternalId: role.nwExternalId,
           Description: role.name + "Admin",
           ProductModule: "Implementation Support",
           SystemGroup: "Integrations",
@@ -211,6 +219,7 @@ function createRolePayload(role) {
       records.push({
         appData: {
           Role: nameSpace + " - " + role.name + " Admin",
+          nwExternalId: role.nwExternalId,
           Description: role.name + "Admin",
           ProductModule: "Implementation Support",
           SystemGroup: "Integrations",

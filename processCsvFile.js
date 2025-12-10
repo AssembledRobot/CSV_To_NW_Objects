@@ -3,11 +3,13 @@ import createNWCall from "./createNWCall.js";
 import readCsvHeaders from "./readCsvHeaders.js";
 
 const createDataItem = true;
-const createSecurityGroup = true;
-const createTable = true;
-const createApp = true;
-const createPermission = true;
-const createRole = true;
+const createSecurityGroup = false;
+const createTable = false;
+const createApp = false;
+const createPermission = false;
+const createRole = false;
+
+const nwExternalId = Math.random().toString(36).substring(2, 12);
 
 export default async function processCsvFile(
   filePath,
@@ -33,6 +35,7 @@ export default async function processCsvFile(
       const dataItem = {
         name: headerName,
         type: "DataItems",
+        nwExternalId: nwExternalId,
         dataItemType: dataType,
       };
       await createNWCall(accessToken, apiBaseUrl, dataItem);
@@ -46,6 +49,7 @@ export default async function processCsvFile(
     const securityGroup = {
       name: tableName,
       type: "SecurityGroups",
+      nwExternalId: nwExternalId,
     };
     await createNWCall(accessToken, apiBaseUrl, securityGroup);
   }
@@ -55,6 +59,7 @@ export default async function processCsvFile(
       name: tableName,
       type: "TableSchemas",
       fields: fields,
+      nwExternalId: nwExternalId,
     };
     await createNWCall(accessToken, apiBaseUrl, table);
   }
@@ -63,6 +68,7 @@ export default async function processCsvFile(
     const app = {
       name: tableName,
       type: "Applications",
+      nwExternalId: nwExternalId,
       fields: fields,
     };
     await createNWCall(accessToken, apiBaseUrl, app);
@@ -72,6 +78,7 @@ export default async function processCsvFile(
     let permission = {
       name: tableName,
       type: "Permissions",
+      nwExternalId: nwExternalId,
       permissionType: ["App", "Table", "LogicBlock"],
     };
 
@@ -92,6 +99,7 @@ export default async function processCsvFile(
     let role = {
       name: tableName,
       type: "Roles",
+      nwExternalId: nwExternalId,
       roleType: ["Duty", "Functional"],
       createdPermission: createdPermission, // if there were permissions created, add them to the duty role
     };
