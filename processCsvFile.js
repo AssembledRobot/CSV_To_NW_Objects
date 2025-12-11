@@ -3,11 +3,11 @@ import createNWCall from "./createNWCall.js";
 import readCsvHeaders from "./readCsvHeaders.js";
 
 const createDataItem = true;
-const createSecurityGroup = false;
-const createTable = false;
-const createApp = false;
-const createPermission = false;
-const createRole = false;
+const createSecurityGroup = true;
+const createTable = true;
+const createApp = true;
+const createPermission = true;
+const createRole = true;
 
 const nwExternalId = Math.random().toString(36).substring(2, 12);
 
@@ -24,7 +24,7 @@ export default async function processCsvFile(
   const fields = [];
   const createdPermission = [];
 
-  console.log(`Processing CSV file: ${filePath}`);
+  console.log(`Processing CSV file: ${filePath}, External ID: ${nwExternalId}`);
 
   // Seperate calls for each data item because it allows partial success
   for (let i = 0; i < headersRow.length; i++) {

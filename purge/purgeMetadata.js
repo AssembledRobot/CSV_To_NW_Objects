@@ -8,8 +8,10 @@ async function main() {
   const files = getFiles();
   let hasErrors = false;
   for (const file of files) {
+    // this is the unique id that was used to create the records initially
+    let nwExternalId = "w58uhlqhhq";
     try {
-      await purgeCsvFile(file, auth.accessToken, auth.apiBaseUrl);
+      await purgeCsvFile(nwExternalId, auth.accessToken, auth.apiBaseUrl);
     } catch (err) {
       console.error(`Error purging of file ${file}:`, err);
       hasErrors = true;
