@@ -1,17 +1,14 @@
-import authenticate from "./auth.js";
 import getFiles from "./getFiles.js";
 import processCsvFile from "./processCsvFile.js";
 
-const auth = await authenticate();
-
 async function main() {
-  const files = getFiles();
+  const filePaths = getFiles();
   let hasErrors = false;
-  for (const file of files) {
+  for (const filePath of filePaths) {
     try {
-      await processCsvFile(file, auth.accessToken, auth.apiBaseUrl);
+      await processCsvFile(filePath);
     } catch (err) {
-      console.error(`Error processing file ${file}:`, err);
+      console.error(`Error processing file ${filePath}:`, err);
       hasErrors = true;
     }
   }

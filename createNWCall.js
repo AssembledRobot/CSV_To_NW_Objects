@@ -18,8 +18,8 @@ export default async function createNWCall(accessToken, apiBaseUrl, data) {
 
     let payload = createPayload(data);
 
-    // Make the request and wait for it to finish
-    const response = await axios.post(url, payload, config);
+    // Make the request using the appropriate HTTP method
+    const response = await axios[data.httpMethod](url, payload, config);
 
     console.log(`✅ ${data.type} created successfully → ${data.name}`);
     return response.data;

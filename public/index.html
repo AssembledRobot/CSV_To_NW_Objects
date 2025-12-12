@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CSV To Nextworld</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1>CSV to Nextworld Converter</h1>
+
+  <form id="uploadForm" enctype="multipart/form-data">
+    <input type="file" name="csvfile" accept=".csv" required />
+    <button type="submit">Process CSV</button>
+
+    <div class="checkbox-group">
+      <label><input type="checkbox" name="dataItems"> Data Items</label><br>
+      <label><input type="checkbox" name="securityGroups"> Security Groups</label><br>
+      <label><input type="checkbox" name="tables"> Tables</label><br>
+      <label><input type="checkbox" name="applications"> Applications</label><br>
+      <label><input type="checkbox" name="permissions"> Permissions</label><br>
+      <label><input type="checkbox" name="roles"> Roles</label>
+    </div>
+  </form>
+
+  <hr>
+
+  <div id="output"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>

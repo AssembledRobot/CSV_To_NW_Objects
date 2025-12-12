@@ -1,2 +1,3 @@
 RTText,RTNumber,RTBoolean,RTCurrency,RTDate,RTTime,RTDateTime
 Text,Number,TrueFalse,Currency,Date,Time,DateTime
+Example,3,True,

@@ -9,7 +9,7 @@ async function main() {
   let hasErrors = false;
   for (const file of files) {
     // this is the unique id that was used to create the records initially
-    let nwExternalId = "w58uhlqhhq";
+    let nwExternalId = "jnzq4zjrfa";
     try {
       await purgeCsvFile(nwExternalId, auth.accessToken, auth.apiBaseUrl);
     } catch (err) {

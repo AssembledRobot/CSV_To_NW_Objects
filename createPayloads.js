@@ -1,4 +1,6 @@
 const nameSpace = "nsTs";
+const ProductModule = "Implementation Support";
+const SystemGroup = "Integrations";
 
 function buildPayload(appData) {
   const payload = {
@@ -22,6 +24,7 @@ function buildMultiRecordPayload(recordsArray) {
   return payload;
 }
 
+// this routes to the correct payload creation function based on the type of data provided
 export function createPayload(data) {
   switch (data.type) {
     case "DataItems":
@@ -36,6 +39,8 @@ export function createPayload(data) {
       return createPermissionPayload(data);
     case "Roles":
       return createRolePayload(data);
+    case "User":
+      return updateUserPayload(data);
     default:
       throw new Error(`Unsupported type: ${type}`);
   }
@@ -53,9 +58,9 @@ function createDataitemPayload(dataItem) {
       },
     ],
     LookupType: "Single",
-    SystemGroup: "Integrations",
+    ProductModule: ProductModule,
+    SystemGroup: SystemGroup,
     DataItemType: dataItem.dataItemType,
-    ProductModule: "Implementation Support",
     DetailedDescription: dataItem.name,
     DataPrecision: 2,
   };
@@ -67,8 +72,8 @@ function createSecurityGroupPayload(securityGroup) {
   const appData = {
     SecurityGroup: nameSpace + securityGroup.name,
     nwExternalId: securityGroup.nwExternalId,
-    ProductModule: "Implementation Support",
-    SystemGroup: "Integrations",
+    ProductModule: ProductModule,
+    SystemGroup: SystemGroup,
   };
 
   return buildPayload(appData);
@@ -86,8 +91,8 @@ function createTablePayload(table) {
     TableSchemaType: "Main",
     SchemaCategory: "Tenant",
     Description: table.name,
-    SystemGroup: "Integrations",
-    ProductModule: "Integration",
+    ProductModule: ProductModule,
+    SystemGroup: SystemGroup,
     TableSecurityGroup: nameSpace + table.name,
     Fields: tableFields,
   };
@@ -109,8 +114,8 @@ function createAppPayload(app) {
     ApplicationType: "List Only",
     ApplicationStyle: "Standard",
     Description: app.name,
-    ProductModule: "Implementation Support",
-    SystemGroup: "Integrations",
+    ProductModule: ProductModule,
+    SystemGroup: SystemGroup,
     ApplicationSecurityGroup: nameSpace + app.name,
     TableSchema: nameSpace + app.name,
     Pages: [
@@ -134,8 +139,8 @@ function createPermissionPayload(permission) {
             Permission: nameSpace + permission.name + " - Apps",
             nwExternalId: permission.nwExternalId,
             Description: permission.name,
-            ProductModule: "Implementation Support",
-            SystemGroup: "Integrations",
+            ProductModule: ProductModule,
+            SystemGroup: SystemGroup,
             ApplicationSecurityForm: [
               {
                 SecurityGroup: nameSpace + permission.name,
@@ -150,8 +155,8 @@ function createPermissionPayload(permission) {
             Permission: nameSpace + permission.name + " - RUID All",
             nwExternalId: permission.nwExternalId,
             Description: permission.name,
-            ProductModule: "Implementation Support",
-            SystemGroup: "Integrations",
+            ProductModule: ProductModule,
+            SystemGroup: SystemGroup,
             AccessRules: [
               {
                 SecurityGroup: nameSpace + permission.name,
@@ -170,8 +175,8 @@ function createPermissionPayload(permission) {
             Permission: nameSpace + permission.name + " - Logic Blocks",
             nwExternalId: permission.nwExternalId,
             Description: permission.name,
-            ProductModule: "Implementation Support",
-            SystemGroup: "Integrations",
+            ProductModule: ProductModule,
+            SystemGroup: SystemGroup,
             ActionSecurityLogicBlocks: [
               {
                 SecurityGroup: nameSpace + permission.name,
@@ -194,10 +199,10 @@ function createRolePayload(role) {
   let permissionsList = [];
 
   if (
-    role.createdPermission !== undefined &&
-    role.createdPermission.length > 0
+    role.createdPermissions !== undefined &&
+    role.createdPermissions.length > 0
   ) {
-    for (const perm of role.createdPermission) {
+    for (const perm of role.createdPermissions) {
       permissionsList.push({ Permission: perm });
     }
   }
@@ -209,8 +214,8 @@ function createRolePayload(role) {
           Role: nameSpace + role.name + "Admin",
           nwExternalId: role.nwExternalId,
           Description: role.name + "Admin",
-          ProductModule: "Implementation Support",
-          SystemGroup: "Integrations",
+          ProductModule: ProductModule,
+          SystemGroup: SystemGroup,
           RoleType: "DutyRole",
           PermissionsList: permissionsList,
         },
@@ -221,12 +226,20 @@ function createRolePayload(role) {
           Role: nameSpace + " - " + role.name + " Admin",
           nwExternalId: role.nwExternalId,
           Description: role.name + "Admin",
-          ProductModule: "Implementation Support",
-          SystemGroup: "Integrations",
+          ProductModule: ProductModule,
+          SystemGroup: SystemGroup,
           RoleType: "FunctionalRole",
         },
       });
     }
   }
   return buildMultiRecordPayload(records);
+}
+
+function updateUserPayload(user) {
+  const appData = {
+    UserName: user.name
+  };
+
+  return buildPayload(appData);
 }

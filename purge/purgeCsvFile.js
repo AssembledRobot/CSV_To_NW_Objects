@@ -86,7 +86,7 @@ export default async function purgeCsvFile(
           commitContainer: true,
           createContainer: true,
         };
-        console.log(`🗑️ Purging records from ${type}`);
+        console.log(`🗑️  Purging records from ${type}`);
         const deleteResponse = await axios.post(url, payload, config);
       } else {
         console.log(
