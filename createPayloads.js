@@ -149,10 +149,70 @@ function createPermissionPayload(permission) {
           },
         });
         break;
-      case "Table":
+      case "TableR":
         records.push({
           appData: {
-            Permission: nameSpace + permission.name + " - RUID All",
+            Permission: nameSpace + permission.name + " - Table R",
+            nwExternalId: permission.nwExternalId,
+            Description: permission.name,
+            ProductModule: ProductModule,
+            SystemGroup: SystemGroup,
+            AccessRules: [
+              {
+                SecurityGroup: nameSpace + permission.name,
+                AllowRead: true,
+                AllowDelete: false,
+                AllowInsert: false,
+                AllowUpdate: false,
+              },
+            ],
+          },
+        });
+        break;
+      case "TableRU":
+        records.push({
+          appData: {
+            Permission: nameSpace + permission.name + " - Table RU",
+            nwExternalId: permission.nwExternalId,
+            Description: permission.name,
+            ProductModule: ProductModule,
+            SystemGroup: SystemGroup,
+            AccessRules: [
+              {
+                SecurityGroup: nameSpace + permission.name,
+                AllowRead: true,
+                AllowDelete: false,
+                AllowInsert: false,
+                AllowUpdate: true,
+              },
+            ],
+          },
+        });
+        break;
+      case "TableRUI":
+        records.push({
+          appData: {
+            Permission: nameSpace + permission.name + " - Table RUI",
+            nwExternalId: permission.nwExternalId,
+            Description: permission.name,
+            ProductModule: ProductModule,
+            SystemGroup: SystemGroup,
+            AccessRules: [
+              {
+                SecurityGroup: nameSpace + permission.name,
+                AllowRead: true,
+                AllowDelete: false,
+                AllowInsert: true,
+                AllowUpdate: true,
+              },
+            ],
+          },
+        });
+        break;
+      case "TableRUID":
+        records.push({
+          appData: {
+            Permission: nameSpace + permission.name + " - Table RUID",
             nwExternalId: permission.nwExternalId,
             Description: permission.name,
             ProductModule: ProductModule,
@@ -169,10 +229,28 @@ function createPermissionPayload(permission) {
           },
         });
         break;
-      case "LogicBlock":
+      case "LogicBlocksR":
         records.push({
           appData: {
-            Permission: nameSpace + permission.name + " - Logic Blocks",
+            Permission: nameSpace + permission.name + " - Logic Blocks R",
+            nwExternalId: permission.nwExternalId,
+            Description: permission.name,
+            ProductModule: ProductModule,
+            SystemGroup: SystemGroup,
+            ActionSecurityLogicBlocks: [
+              {
+                SecurityGroup: nameSpace + permission.name,
+                AllowFullUpdate: true,
+                SkipRowSecurity: false,
+              },
+            ],
+          },
+        });
+        break;
+      case "LogicBlocksRUID":
+        records.push({
+          appData: {
+            Permission: nameSpace + permission.name + " - Logic Blocks RUID",
             nwExternalId: permission.nwExternalId,
             Description: permission.name,
             ProductModule: ProductModule,
@@ -208,29 +286,73 @@ function createRolePayload(role) {
   }
 
   for (const type of role.roleType) {
-    if (type === "Duty") {
-      records.push({
-        appData: {
-          Role: nameSpace + role.name + "Admin",
-          nwExternalId: role.nwExternalId,
-          Description: role.name + "Admin",
-          ProductModule: ProductModule,
-          SystemGroup: SystemGroup,
-          RoleType: "DutyRole",
-          PermissionsList: permissionsList,
-        },
-      });
-    } else if (type === "Functional") {
-      records.push({
-        appData: {
-          Role: nameSpace + " - " + role.name + " Admin",
-          nwExternalId: role.nwExternalId,
-          Description: role.name + "Admin",
-          ProductModule: ProductModule,
-          SystemGroup: SystemGroup,
-          RoleType: "FunctionalRole",
-        },
-      });
+    switch (type) {
+      case "Viewer":
+        records.push({
+          appData: {
+            Role: nameSpace + " - " + role.name + " Viewer",
+            nwExternalId: role.nwExternalId,
+            Description: role.name + " Viewer",
+            ProductModule: ProductModule,
+            SystemGroup: SystemGroup,
+            RoleType: "FunctionalRole",
+          },
+          appData: {
+            Role: nameSpace + role.name + "Viewer",
+            nwExternalId: role.nwExternalId,
+            Description: role.name + "Viewer",
+            ProductModule: ProductModule,
+            SystemGroup: SystemGroup,
+            RoleType: "DutyRole",
+            PermissionsList: permissionsList,
+          },
+        });
+        break;
+      case "Processor":
+        records.push({
+          appData: {
+            Role: nameSpace + " - " + role.name + " Processor",
+            nwExternalId: role.nwExternalId,
+            Description: role.name + " Processor",
+            ProductModule: ProductModule,
+            SystemGroup: SystemGroup,
+            RoleType: "FunctionalRole",
+            PermissionsList: permissionsList,
+          },
+          appData: {
+            Role: nameSpace + role.name + "Processor",
+            nwExternalId: role.nwExternalId,
+            Description: role.name + "Processor",
+            ProductModule: ProductModule,
+            SystemGroup: SystemGroup,
+            RoleType: "DutyRole",
+            PermissionsList: permissionsList,
+          },
+        });
+        break;
+      case "Admin":
+        records.push({
+          appData: {
+            Role: nameSpace + " - " + role.name + " Admin",
+            nwExternalId: role.nwExternalId,
+            Description: role.name + " Admin",
+            ProductModule: ProductModule,
+            SystemGroup: SystemGroup,
+            RoleType: "FunctionalRole",
+          },
+          appData: {
+            Role: nameSpace + role.name + "Admin",
+            nwExternalId: role.nwExternalId,
+            Description: role.name + "Admin",
+            ProductModule: ProductModule,
+            SystemGroup: SystemGroup,
+            RoleType: "DutyRole",
+            PermissionsList: permissionsList,
+          },
+        });
+        break;
+      default:
+        throw new Error(`Unsupported role type: ${type}`);
     }
   }
   return buildMultiRecordPayload(records);
@@ -238,7 +360,7 @@ function createRolePayload(role) {
 
 function updateUserPayload(user) {
   const appData = {
-    UserName: user.name
+    UserName: user.name,
   };
 
   return buildPayload(appData);
