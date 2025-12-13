@@ -5,6 +5,24 @@ const subRoleCheckboxes = document.querySelectorAll('.role-types input[type="che
 const permissionsCheckbox = document.querySelector('input[name="permissionsMain"]');
 const subPermissionCheckboxes = document.querySelectorAll('.permission-types input[type="checkbox"]');
 
+// Tab switching
+const tabButtons = document.querySelectorAll('.tab-button');
+const tabContents = document.querySelectorAll('.tab-content');
+
+tabButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    const tabName = button.getAttribute('data-tab');
+    
+    // Remove active class from all buttons and hide all tab contents
+    tabButtons.forEach(btn => btn.classList.remove('active'));
+    tabContents.forEach(content => content.style.display = 'none');
+    
+    // Add active class to clicked button and show corresponding tab content
+    button.classList.add('active');
+    document.getElementById(tabName + '-tab').style.display = 'block';
+  });
+});
+
 // Auto-select main checkbox when any sub-checkbox is selected
 function autoSelectMainCheckbox(mainCheckbox, subCheckboxes) {
   subCheckboxes.forEach(checkbox => {

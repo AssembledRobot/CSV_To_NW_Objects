@@ -7,38 +7,55 @@
 <body>
   <h1>CSV to Nextworld Converter</h1>
 
-  <form id="uploadForm" enctype="multipart/form-data">
-    <input type="file" name="csvfile" accept=".csv" required />
-    
-    <div class="checkbox-group">
-      <label><input type="checkbox" name="dataItems"> Data Items</label>
-      <label><input type="checkbox" name="securityGroups"> Security Groups</label>
-      <label><input type="checkbox" name="tables"> Tables</label>
-      <label><input type="checkbox" name="applications"> Applications</label>
-      <label><input type="checkbox" name="permissionsMain"> Permissions</label>
-      <div class="permission-types">
-        <label><input type="checkbox" name="permissionApps"> Apps</label>
-        <label><input type="checkbox" name="permissionTableR"> Table R</label>
-        <label><input type="checkbox" name="permissionTableRU"> Table RU</label>
-        <label><input type="checkbox" name="permissionTableRUI"> Table RUI</label>
-        <label><input type="checkbox" name="permissionTableRUID"> Table RUID</label>
-        <label><input type="checkbox" name="permissionLogicBlocksR"> Logic blocks R only</label>
-        <label><input type="checkbox" name="permissionLogicBlocksRUID"> Logic blocks</label>
+  <div class="tabs">
+    <button class="tab-button active" data-tab="create">Create</button>
+    <button class="tab-button" data-tab="purge">Purge</button>
+  </div>
+
+  <div class="tab-content" id="create-tab">
+    <form id="uploadForm" enctype="multipart/form-data">
+      <input type="file" name="csvfile" accept=".csv" required />
+      
+      <div class="checkbox-group">
+        <label><input type="checkbox" name="dataItems"> Data Items</label>
+        <label><input type="checkbox" name="securityGroups"> Security Groups</label>
+        <label><input type="checkbox" name="tables"> Tables</label>
+        <label><input type="checkbox" name="applications"> Applications</label>
+        <label><input type="checkbox" name="permissionsMain"> Permissions</label>
+        <div class="permission-types">
+          <label><input type="checkbox" name="permissionApps"> Apps</label>
+          <label><input type="checkbox" name="permissionTableR"> Table R</label>
+          <label><input type="checkbox" name="permissionTableRU"> Table RU</label>
+          <label><input type="checkbox" name="permissionTableRUI"> Table RUI</label>
+          <label><input type="checkbox" name="permissionTableRUID"> Table RUID</label>
+          <label><input type="checkbox" name="permissionLogicBlocksR"> Logic blocks R only</label>
+          <label><input type="checkbox" name="permissionLogicBlocksRUID"> Logic blocks</label>
+        </div>
+        <label><input type="checkbox" name="rolesMain"> Roles</label>
+        <div class="role-types">
+          <label><input type="checkbox" name="roleViewer"> Viewer</label>
+          <label><input type="checkbox" name="roleProcessor"> Processor</label>
+          <label><input type="checkbox" name="roleAdmin"> Admin</label>
+        </div>
       </div>
-      <label><input type="checkbox" name="rolesMain"> Roles</label>
-      <div class="role-types">
-        <label><input type="checkbox" name="roleViewer"> Viewer</label>
-        <label><input type="checkbox" name="roleProcessor"> Processor</label>
-        <label><input type="checkbox" name="roleAdmin"> Admin</label>
-      </div>
-    </div>
 
-    <button type="submit">Process CSV</button>
-  </form>
+      <button type="submit">Process CSV</button>
+    </form>
 
-  <hr>
+    <hr>
 
-  <div id="output"></div>
+    <div class="output"></div>
+  </div>
+
+  <div class="tab-content" id="purge-tab" style="display: none;">
+    <label for="externalId">External ID:</label>
+    <input type="text" id="externalId" name="externalId" />
+    <button type="button" id="purgeButton">Purge</button>
+
+    <hr>
+
+    <div class="output"></div>
+  </div>
 
   <script src="script.js"></script>
 </body>
